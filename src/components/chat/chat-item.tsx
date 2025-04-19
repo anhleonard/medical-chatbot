@@ -1,0 +1,218 @@
+import React, { useState } from "react";
+import { FilesId } from "../chat";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Message } from "../../../utils/interfaces";
+import TextArea from "@/libs/text-area";
+import Button from "@/libs/button";
+import { openAlert } from "@/redux/slices/alert";
+import { useDispatch } from "react-redux";
+type props = {
+  message: Message;
+  filesId: FilesId[];
+};
+
+const ChatItem = ({ message, filesId }: props) => {
+  const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [like, setLike] = useState(false);
+  const [dislike, setDislike] = useState(false);
+  const [comment, setComment] = useState("");
+
+  const handleLikeAction = () => {
+    try {
+      setLike(true);
+      if (dislike) {
+        setDislike(false);
+      }
+    } catch (error) {}
+  };
+
+  const handleDislikeAction = () => {
+    try {
+      setDislike(true);
+      if (like) {
+        setLike(false);
+      }
+    } catch (error) {}
+  };
+
+  const handleSendComment = () => {
+    setOpen(false);
+  };
+
+  const handleCancelComment = () => {
+    setOpen(false);
+    if (!comment) {
+      setComment("");
+    }
+  };
+
+  const handleEditComment = () => {
+    setOpen(true);
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(message.content);
+      dispatch(
+        openAlert({
+          isOpen: true,
+          title: "Thông báo",
+          subtitle: "Sao chép thành công",
+          type: "info",
+        }),
+      );
+    } catch (error) {
+      dispatch(
+        openAlert({
+          isOpen: true,
+          title: "Lỗi",
+          subtitle: "Sao chép thất bại",
+          type: "error",
+        }),
+      );
+    }
+  };
+
+  return (
+    <div className="whitespace-pre-wrap w-full text-black/90 font-medium">
+      {message.role === "user" && (
+        <div className="my-6 md:my-8 w-full flex flex-wrap">
+          <div className="ml-auto mt-1.5">
+            <div className="flex flex-wrap gap-2 mb-2">
+              {filesId.map((file) => (
+                <div key={file.id} className="w-36 h-36 p-2 group relative">
+                  <Image
+                    className="object-cover object-center w-full h-full rounded-lg"
+                    src={file.imageUrl}
+                    width={512}
+                    height={512}
+                    alt="uploaded image"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="py-2 px-3 lg:px-4 bg-grey-c100 rounded-2xl w-fit ml-auto">
+              <p className="text-sm break-words max-w-xs sm:max-w-sm md:max-w-xl lg:max-w-sm xl:max-w-3xl">
+                {message.content}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {message.role === "assistant" && (
+        <div>
+          <div className="flex gap-2 items-start md:gap-3 w-full">
+            <div className="mt-0"></div>
+            <div className="w-full">
+              <div className="flex items-center gap-2 mb-2">
+                <Image src="/logo/main-robotic.svg" width={24} height={24} alt="Medical chatbot" />
+                <p className="font-bold text-sm md:text-sm">BOT</p>
+              </div>
+              <div
+                className="text-sm"
+                dangerouslySetInnerHTML={{
+                  __html: message.content.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
+                }}
+              />
+              <div className="flex flex-row items-center gap-2 mt-2 w-full">
+                <button
+                  onClick={handleLikeAction}
+                  className={`${
+                    like ? "bg-button-c10" : "hover:bg-grey-c100 active:bg-grey-c200"
+                  } rounded-md p-1 duration-200 transition`}
+                >
+                  {like ? (
+                    <Image src="/icons/blue-like-icon.svg" alt="blue-like-icon" width={18} height={18} />
+                  ) : (
+                    <Image src="/icons/like-icon.svg" alt="like-icon" width={18} height={18} />
+                  )}
+                </button>
+                <button
+                  onClick={handleDislikeAction}
+                  className={`${
+                    dislike ? "bg-button-c10" : "hover:bg-grey-c100 active:bg-grey-c200"
+                  } rounded-md p-1 duration-200 transition`}
+                >
+                  {dislike ? (
+                    <Image src="/icons/blue-dislike-icon.svg" alt="blue-dislike-icon" width={18} height={18} />
+                  ) : (
+                    <Image src="/icons/dislike-icon.svg" alt="dislike-icon" width={18} height={18} />
+                  )}
+                </button>
+                <button
+                  onClick={handleCopy}
+                  className="hover:bg-grey-c100 active:bg-grey-c200 rounded-md p-1 duration-200 transition"
+                >
+                  <Image src="/icons/copy-icon.svg" alt="copy-icon" width={18} height={18} />
+                </button>
+                <button
+                  onClick={() => setOpen(true)}
+                  className="hover:bg-grey-c100 active:bg-grey-c200 rounded-md p-1 duration-200 transition"
+                >
+                  <Image src="/icons/add-comment.svg" alt="add-comment" width={18} height={18} />
+                </button>
+              </div>
+              {open && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-4 w-full flex flex-col gap-3"
+                >
+                  <TextArea
+                    label="Vui lòng nhập nội dung bổ sung"
+                    defaultValue={comment}
+                    onChange={(value) => setComment(value)}
+                    className="w-full"
+                  />
+                  <div className="flex flex-row items-center justify-end gap-2 w-full">
+                    <Button
+                      label="Hủy"
+                      onClick={handleCancelComment}
+                      status="cancel"
+                      className="rounded-xl py-2 px-8 !bg-grey-c200/60"
+                    />
+                    <Button
+                      label="Gửi"
+                      onClick={handleCancelComment}
+                      status="primary"
+                      className="rounded-xl !py-2 px-8 bg-primary-c900"
+                    />
+                  </div>
+                </motion.div>
+              )}
+              {comment && !open ? (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="relative flex items-center mt-4 mb-2">
+                    <div className="w-4 border-t border-grey-c200/90"></div>
+                    <span className="text-grey-c900 text-xs px-3">Thông tin bổ sung</span>
+                    <div className="flex-grow border-t border-grey-c200/90"></div>
+                  </div>
+                  <div className="text-justify text-black/90 text-sm leading-7">
+                    {comment}{" "}
+                    <button
+                      onClick={handleEditComment}
+                      className="hover:bg-grey-c100 active:bg-grey-c200 rounded-md p-1 duration-200 transition ml-1"
+                    >
+                      <Image src="/icons/edit-icon.svg" alt="edit-icon" width={16} height={16} />
+                    </button>
+                  </div>
+                </motion.div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ChatItem;
