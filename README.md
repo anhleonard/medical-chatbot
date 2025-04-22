@@ -14,15 +14,12 @@
 
 ## ℹ️About
 
-
-
 ## 🔧Getting started
 
 **Clone**
 
 ```
-git clone https://github.com/tantowish/nextjs-chatbot-ui.git
-cd zenspire-be
+git clone https://github.com/anhleonard/medical-chatbot.git
 ```
 
 **Setup Environment**
@@ -34,20 +31,13 @@ cp .env.example .env
 **Install local dependencies**
 
 ```
-npm install
-```
-
-**Generate & Migrate the database**
-
-```
-npx prisma generate
-npx prisma migrate dev
+pnpm install
 ```
 
 **Running Service**
 
 ```
-npm run dev
+pnpm dev
 ```
 
 ## 🛠️Technologies
@@ -56,18 +46,11 @@ npm run dev
 
 **Nextjs** : React Framework.
 
-**PostgreSQ:** : SQL Database
-
-**Prisma** : ORM.
-
 **Vercel SDK** : Advanced AI technology SDK.
-
-
 
 ## 📁Project Structure (Backend)
 
 ```
-|-- prisma/             # Database related folder
 |-- public/             # Public Folder
 |-- src/
 |   |-- app/            # Main application logic
@@ -81,7 +64,7 @@ npm run dev
 
 ## 🛢Database ERD
 
-- 
+-
 
 ## 🧾License
 

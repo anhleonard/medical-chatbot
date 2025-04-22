@@ -14,4 +14,11 @@ export interface CreateMessageDto {
   message: string;
   conversation_id?: number;
   screenshot?: string;
+  file?: string | File;
+}
+
+export interface FeedbackDto {
+  message_id: number;
+  feedback: boolean;
+  comment: string;
 }

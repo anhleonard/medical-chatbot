@@ -19,3 +19,39 @@ export const getConversations = async (token: string) => {
     throw error?.response?.data || error.message;
   }
 };
+
+export const updateConversationTitle = async (conversationId: number, title: string, token: string) => {
+  try {
+    const response = await axios.put(
+      `${API_DOMAIN}/conversations/rename`,
+      {
+        conversation_id: conversationId,
+        title: title,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error?.response?.data || error.message;
+  }
+};
+
+export const deleteConversation = async (conversationId: number, token: string) => {
+  try {
+    const response = await axios.delete(`${API_DOMAIN}/conversations/delete/${conversationId}`, {
+      data: {
+        conversation_id: conversationId,
+      },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    throw error?.response?.data || error.message;
+  }
+};

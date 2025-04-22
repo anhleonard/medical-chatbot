@@ -7,6 +7,8 @@ import TextArea from "@/libs/text-area";
 import Button from "@/libs/button";
 import { openAlert } from "@/redux/slices/alert";
 import { useDispatch } from "react-redux";
+import { FileIcon, PdfIcon, WordIcon } from "@/components/icons";
+
 type props = {
   message: Message;
   filesId: FilesId[];
@@ -18,6 +20,13 @@ const ChatItem = ({ message, filesId }: props) => {
   const [like, setLike] = useState(false);
   const [dislike, setDislike] = useState(false);
   const [comment, setComment] = useState("");
+
+  // Check if message has OCR but no corresponding file
+  const hasOcrButNoFile = message?.hasFile === true && filesId.length === 0;
+
+  console.log(message?.hasFile, "message?.has_ocr");
+
+  console.log(hasOcrButNoFile, "hasOcrButNoFile");
 
   const handleLikeAction = () => {
     try {
@@ -81,23 +90,55 @@ const ChatItem = ({ message, filesId }: props) => {
         <div className="my-6 md:my-8 w-full flex flex-wrap">
           <div className="ml-auto mt-1.5">
             <div className="flex flex-wrap gap-2 mb-2">
-              {filesId.map((file) => (
-                <div key={file.id} className="w-36 h-36 p-2 group relative">
-                  <Image
-                    className="object-cover object-center w-full h-full rounded-lg"
-                    src={file.imageUrl}
-                    width={512}
-                    height={512}
-                    alt="uploaded image"
-                  />
+              {hasOcrButNoFile ? (
+                <div className="px-6 py-4 flex items-center justify-center bg-grey-c100 rounded-lg">
+                  <div className="text-center text-grey-c500 text-sm cursor-default">File không khả dụng</div>
                 </div>
-              ))}
+              ) : (
+                filesId
+                  .filter((file) => file.messageId === message.id)
+                  .map((file) => (
+                    <div key={file.id} className="w-36 h-36 p-2 group relative">
+                      {file.type?.startsWith("image/") ? (
+                        <Image
+                          className="object-cover object-center w-full h-full rounded-lg"
+                          src={file.imageUrl}
+                          width={512}
+                          height={512}
+                          alt="uploaded image"
+                        />
+                      ) : (
+                        <a
+                          href={file.imageUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full h-full flex flex-col items-center justify-center bg-grey-c100 rounded-lg hover:bg-grey-c200 transition-colors"
+                        >
+                          {file.type === "application/pdf" ? (
+                            <PdfIcon className="w-12 h-12" />
+                          ) : file.type === "application/msword" ||
+                            file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ? (
+                            <WordIcon className="w-12 h-12" />
+                          ) : (
+                            <FileIcon className="w-12 h-12" />
+                          )}
+                          <span className="text-xs text-grey-c900 mt-2 text-center px-2 truncate w-full">
+                            {file.name || "Download file"}
+                          </span>
+                        </a>
+                      )}
+                    </div>
+                  ))
+              )}
             </div>
-            <div className="py-2 px-3 lg:px-4 bg-grey-c100 rounded-2xl w-fit ml-auto">
-              <p className="text-sm break-words max-w-xs sm:max-w-sm md:max-w-xl lg:max-w-sm xl:max-w-3xl">
-                {message.content}
-              </p>
-            </div>
+            {/* {!hasOcrButNoFile ? ( */}
+            {true ? (
+              <div className="py-2 px-3 lg:px-4 bg-grey-c100 rounded-2xl w-fit ml-auto">
+                <p className="text-sm break-words max-w-xs sm:max-w-sm md:max-w-xl lg:max-w-sm xl:max-w-3xl">
+                  {message.content}
+                </p>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

@@ -4,6 +4,7 @@ export interface Message {
   role: "user" | "assistant";
   conversationId?: number;
   createdAt?: string;
+  hasFile?: boolean;
 }
 
 export interface Chat {

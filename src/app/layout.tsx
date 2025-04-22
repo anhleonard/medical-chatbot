@@ -2,11 +2,11 @@
 import type { Metadata } from "next";
 import { Manrope, Righteous } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
 import { store } from "@/redux/store";
 import { Provider } from "react-redux";
 import LoadingPage from "@/components/loading";
 import { MainAlert } from "@/components/main-alert";
+import { ConfirmModal } from "@/components/confirm";
 // const inter = Inter({ subsets: ["latin"] });
 
 const manrope = Manrope({
@@ -35,9 +35,9 @@ export default function RootLayout({
       <body className={manrope.className}>
         <Provider store={store}>
           {children}
-          <Toaster />
           <LoadingPage />
           <MainAlert />
+          <ConfirmModal />
         </Provider>
       </body>
     </html>

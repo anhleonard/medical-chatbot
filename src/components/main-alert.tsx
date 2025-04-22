@@ -1,5 +1,4 @@
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
@@ -10,23 +9,23 @@ const alertConfig = {
   success: {
     bgColor: "bg-[#e0f7e7]",
     textColor: "text-[#318258]",
-    icon: "/icons/success-icon.svg"
+    icon: "/icons/success-icon.svg",
   },
   error: {
     bgColor: "bg-[#FFE0E7]",
     textColor: "text-[#BA4059]",
-    icon: "/icons/error-icon.svg"
+    icon: "/icons/error-icon.svg",
   },
   warning: {
     bgColor: "bg-[#fff4e5]",
     textColor: "text-[#ed8936]",
-    icon: "/icons/warning-icon.svg"
+    icon: "/icons/warning-icon.svg",
   },
   info: {
     bgColor: "bg-[#DCF2FF]",
     textColor: "text-[#1495fd]",
-    icon: "/icons/info-icon.svg"
-  }
+    icon: "/icons/info-icon.svg",
+  },
 } as const;
 
 export function MainAlert() {
@@ -45,10 +44,10 @@ export function MainAlert() {
       }
     };
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
@@ -74,7 +73,7 @@ export function MainAlert() {
               </div>
             </div>
           </div>
-          <button 
+          <button
             onClick={handleCloseAlert}
             className="absolute top-2 right-4 hover:opacity-50 active:opacity-70 duration-300 transition-all w-5 h-5"
           >
@@ -83,5 +82,5 @@ export function MainAlert() {
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-import { Cross1Icon, PlusIcon } from "@radix-ui/react-icons";
+import { Cross1Icon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { FaFile, FaFilePdf, FaFileWord } from "react-icons/fa";
@@ -9,9 +9,9 @@ import { FilesId } from "../chat";
 import Spinner from "../spinner";
 import { Context } from "@/context/context";
 import { useRouter } from "next/navigation";
-import { toast } from "../ui/use-toast";
-import { v4 as uuidv4 } from "uuid";
 import { Message } from "../../../utils/interfaces";
+import { openAlert } from "@/redux/slices/alert";
+import { useDispatch } from "react-redux";
 
 type props = {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -46,6 +46,7 @@ export default function ChatForm({
   messages,
   onHeightChange,
 }: props) {
+  const dispatch = useDispatch();
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
@@ -99,21 +100,27 @@ export default function ChatForm({
       const newFileCount = files.length + newFiles.length;
 
       if (newFileCount > 3) {
-        toast({
-          title: "Lỗi",
-          description: "Chỉ upload tối đa 3 files",
-          variant: "destructive",
-        });
+        dispatch(
+          openAlert({
+            isOpen: true,
+            title: "Lỗi",
+            subtitle: "Chỉ upload tối đa 3 files",
+            type: "error",
+          }),
+        );
         return;
       }
 
       for (let file of newFiles) {
         if (file.size > 2 * 1024 * 1024) {
-          toast({
-            title: "Lỗi",
-            description: "Dung lượng file tối đa là 2MB",
-            variant: "destructive",
-          });
+          dispatch(
+            openAlert({
+              isOpen: true,
+              title: "Lỗi",
+              subtitle: "Dung lượng file tối đa là 2MB",
+              type: "error",
+            }),
+          );
           return;
         }
       }
@@ -151,21 +158,27 @@ export default function ChatForm({
 
       const newFileCount = files.length + newFiles.length;
       if (newFileCount > 3) {
-        toast({
-          title: "Lỗi",
-          description: "Chỉ upload tối đa 3 files",
-          variant: "destructive",
-        });
+        dispatch(
+          openAlert({
+            isOpen: true,
+            title: "Lỗi",
+            subtitle: "Chỉ upload tối đa 3 files",
+            type: "error",
+          }),
+        );
         return;
       }
 
       for (let file of newFiles) {
         if (file.size > 2 * 1024 * 1024) {
-          toast({
-            title: "Lỗi",
-            description: "Dung lượng file tối đa là 2MB",
-            variant: "destructive",
-          });
+          dispatch(
+            openAlert({
+              isOpen: true,
+              title: "Lỗi",
+              subtitle: "Dung lượng file tối đa là 2MB",
+              type: "error",
+            }),
+          );
           return;
         }
       }
@@ -214,43 +227,6 @@ export default function ChatForm({
       handleSubmit(event as any);
     }
   };
-
-  // useEffect(() => {
-  //   const saveData = async () => {
-  //     let saved = null;
-  //     if (isLoading) {
-  //       const newFilesId = [
-  //         ...filesId,
-  //         ...Object.entries(fileUploaded).map(([key, value]) => ({
-  //           id: messages[messages.length - 1].id,
-  //           imageUrl: value,
-  //         })),
-  //       ];
-  //       saved = await saveChat(chatId, messages, newFilesId);
-  //       if (!chatId) {
-  //         setChats([
-  //           {
-  //             id: saved,
-  //             messages: messages,
-  //             updated_at: new Date(),
-  //           },
-  //           ...chats,
-  //         ]);
-  //       }
-  //       setFilesId(newFilesId);
-  //       setFileUploaded({});
-  //     } else {
-  //       if (messages.length !== 0) {
-  //         saved = await saveChat(chatId, messages, filesId);
-  //         router.push(`/chat/${saved}`);
-  //       }
-  //     }
-  //     if (!chatId) {
-  //       setChatId(saved);
-  //     }
-  //   };
-  //   saveData();
-  // }, [isLoading]);
 
   const isAnyFileUploading = Object.values(uploading).some((status) => status);
 

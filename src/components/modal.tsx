@@ -1,4 +1,3 @@
-import Image from "next/image";
 import React, { useEffect, useCallback } from "react";
 
 type ModalProps = {

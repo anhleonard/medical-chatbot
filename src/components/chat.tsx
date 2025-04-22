@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { toast } from "./ui/use-toast";
 import ChatForm from "./chat/chat-form";
 import ChatContainer from "./chat/chat-container";
 import { Message } from "../../utils/interfaces";
@@ -19,6 +18,8 @@ export type FilesId = {
   imageUrl: string;
   id: string;
   messageId?: number;
+  type?: string;
+  name?: string;
 };
 
 type props = {
@@ -159,9 +160,21 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
       let messageData;
 
       if (files.length > 0) {
-        // Convert files to base64 when there are images
+        console.log(files, "files");
+        // Separate images and documents
+        const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+        const documentFiles = files.filter(
+          (file) =>
+            file.type === "application/pdf" ||
+            file.type === "application/msword" ||
+            file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        );
+
+        console.log(documentFiles, "documentFiles");
+
+        // Process images to base64
         const base64Images = await Promise.all(
-          files.map((file) => {
+          imageFiles.map((file) => {
             return new Promise<string>((resolve) => {
               const reader = new FileReader();
               reader.onloadend = () => {
@@ -174,18 +187,34 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
         );
 
         // Create unique file IDs for each image and associate with the user message
-        const newFilesId = base64Images.map((base64, index) => ({
+        const newFilesId = [...base64Images].map((base64, index) => ({
           id: `file-${Date.now()}-${index}`,
           imageUrl: base64,
           messageId: userMessage.id,
+          type: imageFiles[index].type,
+          name: imageFiles[index].name,
         }));
 
-        // Update filesId state with new images
+        // Add document files to filesId
+        if (documentFiles.length > 0) {
+          const documentFile = documentFiles[0];
+          const documentFileId = {
+            id: `file-${Date.now()}-doc`,
+            imageUrl: URL.createObjectURL(documentFile),
+            messageId: userMessage.id,
+            type: documentFile.type,
+            name: documentFile.name,
+          };
+          newFilesId.push(documentFileId);
+        }
+
+        // Update filesId state with new files
         setFilesId((prev) => [...prev, ...newFilesId]);
 
         messageData = {
           message: input,
-          screenshot: `${base64Images[0]}`,
+          ...(base64Images.length > 0 && { screenshot: base64Images[0] }),
+          ...(documentFiles.length > 0 && { file: documentFiles[0] }),
           ...(chatId && { conversation_id: parseInt(chatId) }),
         };
       } else {
