@@ -17,7 +17,7 @@ export default function ChatSidebar() {
         <div className="flex items-center justify-between">
           <button className="flex items-center gap-2 w-fit">
             <Image src="/logo/medical-logo.svg" alt="medical-logo" width={24} height={24} />
-            <div className="font-righteous text-lg">
+            <div className="font-righteous text-xl 2xl:text-2xl">
               <span className="text-logo">Medical</span> <span className="text-grey-c900">Chatbot</span>
             </div>
           </button>
@@ -26,7 +26,7 @@ export default function ChatSidebar() {
           <div className="flex flex-row gap-2">
             <button onClick={handlerNewChat} className="flex-1 flex flex-row items-center justify-center gap-2 py-3 rounded-2xl bg-button-c10 hover:bg-button-c50 active:bg-button-c100 duration-300 transition-all">
               <Image src="/icons/blue-add-icon.svg" alt="blue-add-icon" width={18} height={18} />
-              <div className="text-sm text-primary-c900 font-semibold">Tạo mới</div>
+              <div className="text-sm 2xl:text-base text-primary-c900 font-semibold">Tạo mới</div>
             </button>
             <SearchModal />
           </div>

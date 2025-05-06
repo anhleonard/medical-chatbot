@@ -8,6 +8,8 @@ import Button from "@/libs/button";
 import { openAlert } from "@/redux/slices/alert";
 import { useDispatch } from "react-redux";
 import { FileIcon, PdfIcon, WordIcon } from "@/components/icons";
+import { feedbackMessage } from "@/api/services/message";
+import { getAccessToken } from "@/storage/storage";
 
 type props = {
   message: Message;
@@ -20,45 +22,167 @@ const ChatItem = ({ message, filesId }: props) => {
   const [like, setLike] = useState(false);
   const [dislike, setDislike] = useState(false);
   const [comment, setComment] = useState("");
+  const [tempComment, setTempComment] = useState(""); // Store temporary comment while editing
 
   // Check if message has OCR but no corresponding file
   const hasOcrButNoFile = message?.hasFile === true && filesId.length === 0;
 
-  console.log(message?.hasFile, "message?.has_ocr");
-
-  console.log(hasOcrButNoFile, "hasOcrButNoFile");
-
-  const handleLikeAction = () => {
+  const handleLikeAction = async () => {
     try {
-      setLike(true);
+      const token = getAccessToken();
+      if (!token) {
+        dispatch(
+          openAlert({
+            isOpen: true,
+            title: "Lỗi",
+            subtitle: "Vui lòng đăng nhập để thực hiện chức năng này",
+            type: "error",
+          }),
+        );
+        return;
+      }
+
+      const newLikeState = !like;
+      setLike(newLikeState);
       if (dislike) {
         setDislike(false);
       }
-    } catch (error) {}
+
+      await feedbackMessage(
+        {
+          message_id: message.id,
+          feedback: newLikeState,
+          comment: comment,
+        },
+        token
+      );
+    } catch (error) {
+      dispatch(
+        openAlert({
+          isOpen: true,
+          title: "Lỗi",
+          subtitle: "Có lỗi xảy ra khi gửi phản hồi",
+          type: "error",
+        }),
+      );
+    }
   };
 
-  const handleDislikeAction = () => {
+  const handleDislikeAction = async () => {
     try {
-      setDislike(true);
+      const token = getAccessToken();
+      if (!token) {
+        dispatch(
+          openAlert({
+            isOpen: true,
+            title: "Lỗi",
+            subtitle: "Vui lòng đăng nhập để thực hiện chức năng này",
+            type: "error",
+          }),
+        );
+        return;
+      }
+
+      const newDislikeState = !dislike;
+      setDislike(newDislikeState);
       if (like) {
         setLike(false);
       }
-    } catch (error) {}
+
+      await feedbackMessage(
+        {
+          message_id: message.id,
+          feedback: !newDislikeState, // false for dislike
+          comment: comment,
+        },
+        token
+      );
+    } catch (error) {
+      dispatch(
+        openAlert({
+          isOpen: true,
+          title: "Lỗi",
+          subtitle: "Có lỗi xảy ra khi gửi phản hồi",
+          type: "error",
+        }),
+      );
+    }
   };
 
-  const handleSendComment = () => {
-    setOpen(false);
+  const handleSendComment = async () => {
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        dispatch(
+          openAlert({
+            isOpen: true,
+            title: "Lỗi",
+            subtitle: "Vui lòng đăng nhập để thực hiện chức năng này",
+            type: "error",
+          }),
+        );
+        return;
+      }
+
+      await feedbackMessage(
+        {
+          message_id: message.id,
+          feedback: like ? true : dislike ? false : null,
+          comment: tempComment,
+        },
+        token
+      );
+
+      setComment(tempComment); // Update the actual comment state
+      setOpen(false);
+      
+      // Show different notifications based on whether comment was deleted
+      if (comment && !tempComment) {
+        dispatch(
+          openAlert({
+            isOpen: true,
+            title: "Xóa bình luận",
+            subtitle: "Bình luận đã được xóa thành công",
+            type: "success",
+          }),
+        );
+      } else {
+        dispatch(
+          openAlert({
+            isOpen: true,
+            title: "Thông báo",
+            subtitle: "Gửi bình luận thành công",
+            type: "info",
+          }),
+        );
+      }
+    } catch (error) {
+      dispatch(
+        openAlert({
+          isOpen: true,
+          title: "Lỗi",
+          subtitle: "Có lỗi xảy ra khi gửi bình luận",
+          type: "error",
+        }),
+      );
+    }
   };
 
   const handleCancelComment = () => {
     setOpen(false);
-    if (!comment) {
-      setComment("");
-    }
+    setTempComment(comment); // Restore the previous comment
   };
 
   const handleEditComment = () => {
+    setTempComment(comment); // Store current comment in temp state
     setOpen(true);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      handleSendComment();
+    }
   };
 
   const handleCopy = async () => {
@@ -131,10 +255,9 @@ const ChatItem = ({ message, filesId }: props) => {
                   ))
               )}
             </div>
-            {/* {!hasOcrButNoFile ? ( */}
-            {true ? (
+            {!hasOcrButNoFile ? (
               <div className="py-2 px-3 lg:px-4 bg-grey-c100 rounded-2xl w-fit ml-auto">
-                <p className="text-sm break-words max-w-xs sm:max-w-sm md:max-w-xl lg:max-w-sm xl:max-w-3xl">
+                <p className="text-sm 2xl:text-base break-words max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg">
                   {message.content}
                 </p>
               </div>
@@ -145,19 +268,18 @@ const ChatItem = ({ message, filesId }: props) => {
       {message.role === "assistant" && (
         <div>
           <div className="flex gap-2 items-start md:gap-3 w-full">
-            <div className="mt-0"></div>
             <div className="w-full">
               <div className="flex items-center gap-2 mb-2">
                 <Image src="/logo/main-robotic.svg" width={24} height={24} alt="Medical chatbot" />
                 <p className="font-bold text-sm md:text-sm">BOT</p>
               </div>
               <div
-                className="text-sm"
+                className="text-sm 2xl:text-base"
                 dangerouslySetInnerHTML={{
                   __html: message.content.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>"),
                 }}
               />
-              <div className="flex flex-row items-center gap-2 mt-2 w-full">
+              <div className="flex flex-row items-center gap-2 mt-2 2xl:mt-4 w-full">
                 <button
                   onClick={handleLikeAction}
                   className={`${
@@ -201,12 +323,13 @@ const ChatItem = ({ message, filesId }: props) => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                  className="mt-4 w-full flex flex-col gap-3"
+                  className="mt-4 2xl:mt-6 w-full flex flex-col gap-3"
                 >
                   <TextArea
                     label="Vui lòng nhập nội dung bổ sung"
-                    defaultValue={comment}
-                    onChange={(value) => setComment(value)}
+                    defaultValue={tempComment}
+                    onChange={(value) => setTempComment(value)}
+                    onKeyDown={handleKeyDown}
                     className="w-full"
                   />
                   <div className="flex flex-row items-center justify-end gap-2 w-full">
@@ -218,7 +341,7 @@ const ChatItem = ({ message, filesId }: props) => {
                     />
                     <Button
                       label="Gửi"
-                      onClick={handleCancelComment}
+                      onClick={handleSendComment}
                       status="primary"
                       className="rounded-xl !py-2 px-8 bg-primary-c900"
                     />
@@ -231,20 +354,22 @@ const ChatItem = ({ message, filesId }: props) => {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                >
-                  <div className="relative flex items-center mt-4 mb-2">
-                    <div className="w-4 border-t border-grey-c200/90"></div>
-                    <span className="text-grey-c900 text-xs px-3">Thông tin bổ sung</span>
-                    <div className="flex-grow border-t border-grey-c200/90"></div>
+    >
+                <div className="relative mt-4 2xl:mt-6 mb-2">
+                  <div className="absolute -top-3.5 left-4 bg-white px-2">
+                    <span className="text-grey-c900 text-xs 2xl:text-sm">Thông tin bổ sung</span>
                   </div>
-                  <div className="text-justify text-black/90 text-sm leading-7">
-                    {comment}{" "}
-                    <button
-                      onClick={handleEditComment}
-                      className="hover:bg-grey-c100 active:bg-grey-c200 rounded-md p-1 duration-200 transition ml-1"
-                    >
-                      <Image src="/icons/edit-icon.svg" alt="edit-icon" width={16} height={16} />
-                    </button>
+                    <div className="border-[2px] border-grey-c200/60 rounded-xl px-4 py-3 2xl:px-5 2xl:py-4 mt-2">
+                      <div className="text-justify text-black/90 text-sm 2xl:text-base leading-7">
+                        {comment}{" "}
+                        <button
+                          onClick={handleEditComment}
+                          className="hover:bg-grey-c100 active:bg-grey-c200 rounded-md p-1 duration-200 transition ml-1"
+                        >
+                          <Image src="/icons/edit-icon.svg" alt="edit-icon" width={0} height={0} className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               ) : null}

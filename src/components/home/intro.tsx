@@ -78,20 +78,11 @@ const IntroPage = () => {
     },
   });
 
-  const handle = () => {
-    dispatch(openAlert({
-      isOpen: true,
-      title: "Thành công",
-      subtitle: "Bạn đã đăng ký thành công",
-      type: "success",
-    }));
-  };
-
   return (
     <div className="h-full p-3 pt-12 xl:py-4">
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 2xl:gap-20 h-full">
         {/* grid column 1 */}
-        <div onClick={handle} className="h-full w-full flex flex-col justify-center items-center gap-4 xl:pl-36 2xl:pl-40">
+        <div className="h-full w-full flex flex-col justify-center items-center gap-4 xl:pl-36 2xl:pl-40">
           <Image 
             src={"/logo/start-logo.svg"} 
             alt="start-logo" 
@@ -108,15 +99,15 @@ const IntroPage = () => {
         </div>
 
         {/* grid column 2 */}
-        <div className="h-full w-full rounded-2xl bg-primary-c10 flex items-center justify-center p-10 xl:p-4">
+        <div className="h-full w-full rounded-2xl bg-primary-c10 flex items-center justify-center p-2 md:p-10 xl:p-4">
           <div className="flex flex-col items-center justify-center gap-4 2xl:gap-16 w-full">
-            <div className="flex gap-4 items-end">
-              <Image src={"/logo/medical-logo.svg"} alt="medical-logo" width={60} height={60} />
+            <div className="gap-4 items-end hidden md:flex">
+              <Image src={"/logo/medical-logo.svg"} alt="medical-logo" width={60} height={60}/>
               <div className="font-righteous text-2xl sm:text-3xl xl:text-4xl 2xl:text-5xl">
                 <span className="text-logo">Medical</span> <span className="text-grey-c900">Chatbot</span>
               </div>
             </div>
-            <div className="bg-white rounded-3xl w-full md:w-2/3 xl:w-3/4 px-4 md:px-6 xl:px-10 2xl:px-14 py-6">
+            <div className="bg-white rounded-2xl md:rounded-3xl w-full md:w-2/3 xl:w-3/4 px-4 md:px-6 xl:px-10 2xl:px-14 py-6">
               <div className="text-xl 2xl:text-2xl font-bold text-grey-c900 mx-auto mb-6 text-center">Đăng Ký</div>
               <form onSubmit={formik.handleSubmit} className="flex flex-col gap-5 w-full">
                 <TextField

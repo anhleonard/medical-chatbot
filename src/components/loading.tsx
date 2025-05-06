@@ -14,9 +14,9 @@ const LoadingPage = () => {
       <Image 
         src="/icons/loading.svg"
         alt="loading" 
-        width={80} 
-        height={80}
-        className="animate-spin" 
+        width={0} 
+        height={0}
+        className="animate-spin w-10 h-10 md:w-20 md:h-20" 
       />
     </div>
   )

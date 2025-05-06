@@ -183,9 +183,9 @@ export default function ChatHistory() {
           <ScrollBar orientation="vertical" />
           <div className="flex flex-col h-full overflow-y-auto">
             {chats.length === 0 ? (
-              <div className="flex flex-col gap-2 items-center justify-center mt-32">
-                <Image src="/icons/not-found-item.svg" alt="not-found-item" width={32} height={32} />
-                <div className="text-grey-c400 text-[13px]">Bạn chưa có đoạn chat nào</div>
+              <div className="flex flex-col gap-2 items-center justify-center w-full h-full absolute inset-0">
+                <Image src="/icons/not-found-item.svg" alt="not-found-item" width={0} height={0} className="w-8 h-8 2xl:w-10 2xl:h-10"/>
+                <div className="text-grey-c400 text-[13px] 2xl:text-[15px]">Bạn chưa có đoạn chat nào</div>
               </div>
             ) : null}
             {chats.length !== 0 &&
@@ -203,7 +203,7 @@ export default function ChatHistory() {
 
                     <div className="relative w-full mt-1">
                       <div
-                        className={`flex items-center justify-between gap-2 rounded-lg p-2 py-2.5 text-sm text-left shadow-none hover:bg-grey-c100 w-full text-black/90 duration-200 transition-all ${
+                        className={`flex items-center justify-between gap-2 rounded-lg p-2 py-2.5 text-sm 2xl:text-base text-left shadow-none hover:bg-grey-c100 w-full text-black/90 duration-200 transition-all ${
                           chat.id === Number(currentChatId) ? "bg-grey-c100" : "bg-transparent"
                         }`}
                       >
@@ -214,7 +214,7 @@ export default function ChatHistory() {
                             onChange={(e) => setEditingTitle(e.target.value)}
                             onBlur={handleTitleBlur}
                             onKeyDown={handleTitleKeyDown}
-                            className="rounded-sm flex-1 bg-transparent border border-grey-c200 focus:outline-none focus-visible:ring-0 p-0 h-auto text-sm"
+                            className="rounded-sm flex-1 bg-transparent border border-grey-c200 focus:outline-none focus-visible:ring-0 p-0 h-auto text-sm 2xl:text-base"
                           />
                         ) : (
                           <Link

@@ -112,12 +112,12 @@ export default function ChatForm({
       }
 
       for (let file of newFiles) {
-        if (file.size > 2 * 1024 * 1024) {
+        if (file.size > 5 * 1024 * 1024) {
           dispatch(
             openAlert({
               isOpen: true,
               title: "Lỗi",
-              subtitle: "Dung lượng file tối đa là 2MB",
+              subtitle: "Dung lượng file tối đa là 5MB",
               type: "error",
             }),
           );
@@ -170,12 +170,12 @@ export default function ChatForm({
       }
 
       for (let file of newFiles) {
-        if (file.size > 2 * 1024 * 1024) {
+        if (file.size > 5 * 1024 * 1024) {
           dispatch(
             openAlert({
               isOpen: true,
               title: "Lỗi",
-              subtitle: "Dung lượng file tối đa là 2MB",
+              subtitle: "Dung lượng file tối đa là 5MB",
               type: "error",
             }),
           );
@@ -222,7 +222,7 @@ export default function ChatForm({
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && event.shiftKey && !isLoading) {
+    if (event.key === "Enter" && !event.shiftKey && !isLoading) {
       event.preventDefault();
       handleSubmit(event as any);
     }

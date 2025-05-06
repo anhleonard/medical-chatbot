@@ -6,6 +6,8 @@ import QuestionsPage from "@/components/home/questions";
 import Button from "@/libs/button";
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+// import { Menu } from "lucide-react";
 
 export default function Home() {
   const introRef = useRef<HTMLDivElement | null>(null);
@@ -41,7 +43,9 @@ export default function Home() {
             <span className="text-logo">Medical</span> <span className="text-grey-c900">Chatbot</span>
           </div>
         </button>
-        <div className="flex justify-center sm:justify-end space-x-12">
+        
+        {/* Desktop Menu */}
+        <div className="hidden sm:flex justify-center sm:justify-end space-x-12">
           <button onClick={() => scrollToSection(featuresRef)} className="text-primary-c900 font-semibold text-sm">
             Tính năng
           </button>
@@ -53,6 +57,44 @@ export default function Home() {
           </button>
           <Button onClick={() => scrollToSection(introRef)} label="Bắt đầu" className="px-6 py-2" />
         </div>
+
+        {/* Mobile Menu */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button className="sm:hidden text-primary-c900">
+              {/* <Menu size={24} /> */}
+              <Image src="/icons/menu-icon.svg" alt="menu-icon" width={20} height={20} />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-30 mt-2 mr-1 p-0">
+            <div className="flex flex-col">
+              <button 
+                onClick={() => scrollToSection(introRef)} 
+                className="text-primary-c900 font-semibold text-sm p-3 hover:bg-grey-c100 active:bg-grey-c200 text-left"
+              >
+                Bắt đầu
+              </button>
+              <button 
+                onClick={() => scrollToSection(featuresRef)} 
+                className="text-primary-c900 font-semibold text-sm p-3 hover:bg-grey-c100 active:bg-grey-c200 text-left"
+              >
+                Tính năng
+              </button>
+              <button 
+                onClick={() => scrollToSection(pricingRef)} 
+                className="text-primary-c900 font-semibold text-sm p-3 hover:bg-grey-c100 active:bg-grey-c200 text-left"
+              >
+                Nâng cấp
+              </button>
+              <button 
+                onClick={() => scrollToSection(faqRef)} 
+                className="text-primary-c900 font-semibold text-sm p-3 hover:bg-grey-c100 active:bg-grey-c200 text-left"
+              >
+                Hỏi đáp
+              </button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </nav>
       {/* Sections */}
       <div style={{ paddingTop: navHeight }} className="space-y-12">

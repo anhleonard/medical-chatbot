@@ -131,7 +131,8 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    setIsProcessing(true); // Show loading when sending message
+    setFiles([]);
+    setIsProcessing(true);
 
     try {
       setTimeout(() => {
@@ -267,9 +268,6 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
     setInput(e.target.value);
   };
 
-  console.log(messages, "all messages");
-  console.log("isProcessing:", isProcessing);
-
   return (
     <>
       <div className="bg-white flex h-screen flex-col items-center justify-center w-full">
@@ -287,7 +285,7 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
         </div>
 
         {/* Phần nhập tin nhắn (ChatForm) */}
-        <div className="bg-primary-c900 w-full min-w-[300px] flex justify-center px-2 md:px-0 pb-3 mt-5 bg-transparent sm:w-[600px] sm:pb-8 md:w-[700px] lg:w-[700px] xl:w-[800px]">
+        <div className="bg-primary-c900 w-full min-w-[300px] flex justify-center px-2 md:px-0 pb-3 mt-5 bg-transparent sm:pb-8 sm:w-[600px] md:w-[700px] xl:w-3/4 2xl:w-3/5">
           <ChatForm
             handleSubmit={handleSubmit}
             isLoading={isProcessing}

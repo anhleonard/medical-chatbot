@@ -10,6 +10,7 @@ interface TextAreaProps {
   rows?: number;
   error?: boolean;
   helperText?: string;
+  onKeyDown?: (event: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
 const TextArea = ({
@@ -21,6 +22,7 @@ const TextArea = ({
   rows = 3,
   error = false,
   helperText = "",
+  onKeyDown,
 }: TextAreaProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState(defaultValue);
@@ -72,6 +74,7 @@ const TextArea = ({
           value={value}
           onChange={handleChange}
           onFocus={() => setIsFocused(true)}
+          onKeyDown={onKeyDown}
           className={`text-sm 2xl:text-base w-full border-2 rounded-[20px] px-4 py-3 2xl:py-3.5 outline-none transition-all focus:border-primary-c900
             ${
               isFocused && !error

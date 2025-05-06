@@ -103,7 +103,13 @@ export default function LoginPage() {
             <div className="h-full w-full rounded-2xl bg-primary-c10 flex items-center justify-center p-4">
               <div className="flex flex-col items-center justify-center gap-8 2xl:gap-16 w-full">
                 <div className="flex gap-4 items-end">
-                  <Image src={"/logo/medical-logo.svg"} alt="medical-logo" width={60} height={60} />
+                  <Image
+                    src="/logo/medical-logo.svg"
+                    alt="medical-logo"
+                    width={60}
+                    height={60}
+                    className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12"
+                  />
                   <div className="font-righteous text-2xl sm:text-3xl xl:text-4xl 2xl:text-5xl">
                     <span className="text-logo">Medical</span> <span className="text-grey-c900">Chatbot</span>
                   </div>

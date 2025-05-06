@@ -19,6 +19,6 @@ export interface CreateMessageDto {
 
 export interface FeedbackDto {
   message_id: number;
-  feedback: boolean;
+  feedback: boolean | null;
   comment: string;
 }

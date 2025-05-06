@@ -24,7 +24,7 @@ const Sidebar = () => {
     <>
       <aside
         className={`top-0 left-0 z-30 transition-all duration-300 ease-in-out ${
-          isVisible ? "translate-x-0 w-72" : "-translate-x-72 w-0"
+          isVisible ? "translate-x-0 w-72 2xl:w-80" : "-translate-x-80 w-0"
         } ${"absolute flex lg:relative"}`}
       >
         <div className={`bg-primary-c10 transition-all duration-300 ease-in-out h-screen w-full`}>

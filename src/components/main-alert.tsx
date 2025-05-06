@@ -62,11 +62,11 @@ export function MainAlert() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 50 }}
           transition={{ duration: 0.2 }}
-          className={`fixed top-4 right-4 w-96 rounded-xl ${config.bgColor} z-[999]`}
+          className={`fixed top-4 right-4 w-80 md:w-96 rounded-xl ${config.bgColor} z-[999]`}
         >
           <div className="w-full h-full relative">
-            <div className="flex items-center gap-6 justify-center w-fit pl-6 pr-12 py-4">
-              <Image src={config.icon} alt={`${type}-icon`} width={28} height={28} />
+            <div className="flex items-start gap-6 justify-center w-fit pl-6 pr-12 py-4">
+              <Image src={config.icon} alt={`${type}-icon`} width={28} height={28} className="mt-[2px]"/>
               <div className="text-sm flex flex-col gap-1 items-start">
                 <div className={`font-bold text-[15px] ${config.textColor}`}>{title}</div>
                 <div className="text-black/80 text-[13px] font-medium">{subtitle}</div>

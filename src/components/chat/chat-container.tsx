@@ -22,7 +22,7 @@ const ChatContainer = forwardRef<HTMLDivElement, props>(
       <>
         <ScrollToBottom ref={ref} height={height} chatFormHeight={chatFormHeight} />
         <ScrollArea ref={ref} className="w-full rounded-md pt-20">
-          <div className="sm:w-[600px] md:w-[700px] lg:w-[700px] xl:w-[800px] mx-auto px-2 md:px-0">
+          <div className="sm:w-[600px] md:w-[700px] xl:w-3/4 2xl:w-3/5 mx-auto px-2 md:px-0">
             {messages.map((m) => {
               const messageFiles = filesId.filter((file) => file.messageId === m.id);
               return <ChatItem key={m.id} message={m} filesId={messageFiles} />;
@@ -31,15 +31,15 @@ const ChatContainer = forwardRef<HTMLDivElement, props>(
             {isProcessing && <Loading />}
 
             {messages.length === 0 && !isProcessing && (
-              <div className="flex flex-col justify-center items-center h-full mt-10 gap-4">
+              <div className="flex flex-col justify-center items-center h-full mt-10 2xl:mt-20 gap-4 2xl:gap-6">
                 <Image
                   src="/logo/funny-robotic.svg"
                   alt="funny-robotic"
                   width={0}
                   height={0}
-                  className="w-[200px] h-[200px] xl:w-[250px] xl:h-[250px] 2xl:w-[300px] 2xl:h-[300px] animate-scale-in"
+                  className="w-[200px] h-[200px] xl:w-[250px] xl:h-[250px] 2xl:w-[350px] 2xl:h-[350px] animate-scale-in"
                 />
-                <div className="text-center text-grey-c900 font-bold text-3xl">
+                <div className="text-center text-grey-c900 font-bold text-3xl 2xl:text-4xl">
                   Xin chào, tôi có thể giúp gì cho bạn?
                 </div>
               </div>
