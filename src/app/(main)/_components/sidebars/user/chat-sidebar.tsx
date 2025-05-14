@@ -3,11 +3,15 @@ import { useRouter } from "next/navigation";
 import ChatHistory from "../chat-history";
 import Image from "next/image";
 import SearchModal from "../../search-modal";
+import { useDispatch } from "react-redux";
+import { resetChat } from "@/redux/slices/chat";
 
 export default function ChatSidebar() {
   const router = useRouter();
-  
+  const dispatch = useDispatch();
+
   const handlerNewChat = () => {
+    dispatch(resetChat());
     router.replace("/chat");
   };
 
@@ -24,7 +28,10 @@ export default function ChatSidebar() {
         </div>
         <div className="flex flex-col gap-3 bg-white p-2 rounded-tl-xl rounded-tr-xl">
           <div className="flex flex-row gap-2">
-            <button onClick={handlerNewChat} className="flex-1 flex flex-row items-center justify-center gap-2 py-3 rounded-2xl bg-button-c10 hover:bg-button-c50 active:bg-button-c100 duration-300 transition-all">
+            <button
+              onClick={handlerNewChat}
+              className="flex-1 flex flex-row items-center justify-center gap-2 py-3 rounded-2xl bg-button-c10 hover:bg-button-c50 active:bg-button-c100 duration-300 transition-all"
+            >
               <Image src="/icons/blue-add-icon.svg" alt="blue-add-icon" width={18} height={18} />
               <div className="text-sm 2xl:text-base text-primary-c900 font-semibold">Tạo mới</div>
             </button>

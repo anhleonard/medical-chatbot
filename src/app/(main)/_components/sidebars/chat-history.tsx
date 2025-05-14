@@ -18,6 +18,7 @@ import { openAlert } from "@/redux/slices/alert";
 import { useDispatch } from "react-redux";
 import { openConfirmModal } from "@/redux/slices/confirm";
 import { closeLoading, openLoading } from "@/redux/slices/loading";
+import { setChatId } from "@/redux/slices/chat";
 
 export default function ChatHistory() {
   const { chats, isLoadingChats, setIsVisible, setChats } = useContext(Context);
@@ -25,11 +26,11 @@ export default function ChatHistory() {
   const isLgScreen = useMediaQuery("(min-width: 1024px)");
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useDispatch();
   const currentChatId = pathname.split("/").pop();
   const [editingChatId, setEditingChatId] = useState<number | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (editingChatId && inputRef.current) {
@@ -172,6 +173,13 @@ export default function ChatHistory() {
     );
   };
 
+  const handleChatClick = (chatId: number) => {
+    dispatch(setChatId(chatId));
+    if (!isLgScreen) {
+      setIsVisible(false);
+    }
+  };
+
   return (
     <>
       {isLoadingChats ? (
@@ -184,7 +192,13 @@ export default function ChatHistory() {
           <div className="flex flex-col h-full overflow-y-auto">
             {chats.length === 0 ? (
               <div className="flex flex-col gap-2 items-center justify-center w-full h-full absolute inset-0">
-                <Image src="/icons/not-found-item.svg" alt="not-found-item" width={0} height={0} className="w-8 h-8 2xl:w-10 2xl:h-10"/>
+                <Image
+                  src="/icons/not-found-item.svg"
+                  alt="not-found-item"
+                  width={0}
+                  height={0}
+                  className="w-8 h-8 2xl:w-10 2xl:h-10"
+                />
                 <div className="text-grey-c400 text-[13px] 2xl:text-[15px]">Bạn chưa có đoạn chat nào</div>
               </div>
             ) : null}
@@ -220,11 +234,7 @@ export default function ChatHistory() {
                           <Link
                             href={`/chat/${chat.id}`}
                             className="block truncate flex-1"
-                            onClick={() => {
-                              if (!isLgScreen) {
-                                setIsVisible(false);
-                              }
-                            }}
+                            onClick={() => handleChatClick(chat.id)}
                           >
                             <div className="truncate pr-2">
                               {index === 0 ? <Typewriter words={[truncatedText!]} loop={1} /> : truncatedText}

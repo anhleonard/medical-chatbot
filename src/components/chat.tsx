@@ -12,7 +12,9 @@ import { useContext } from "react";
 import { Context } from "@/context/context";
 import { getConversations } from "@/api/services/conversation";
 import { openAlert } from "@/redux/slices/alert";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { chatSlice } from "@/redux/slices/chat";
+import { RootState } from "@/redux/store";
 
 export type FilesId = {
   imageUrl: string;
@@ -30,6 +32,7 @@ type props = {
 
 export default function Chat({ savedMessages, savedFilesId, savedChatId }: props) {
   const dispatch = useDispatch();
+  const { chatId: globalChatId, messages: globalMessages } = useSelector((state: RootState) => state.chat);
   const { setChats } = useContext(Context);
   const [files, setFiles] = useState<File[]>([]);
   const [filesId, setFilesId] = useState<FilesId[]>([]);
@@ -39,12 +42,26 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
   const [chatFormHeight, setChatFormHeight] = useState<number>(0);
   const [currentRequestId, setCurrentRequestId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
+
+  // Sync local chatId with global chatId
+  useEffect(() => {
+    if (globalChatId !== null) {
+      setChatId(globalChatId.toString());
+    } else {
+      setChatId(null);
+    }
+  }, [globalChatId]);
+
+  // Sync local messages with global messages
+  useEffect(() => {
+    if (savedMessages) {
+      dispatch(chatSlice.actions.setMessages(savedMessages));
+    }
+  }, [savedMessages, dispatch]);
 
   // Function to refresh chat history
   const refreshChatHistory = async () => {
@@ -67,24 +84,21 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
   };
 
   // Handle WebSocket messages
-  const handleWebSocketMessage = useCallback((message: Message) => {
-    console.log("Received WebSocket message:", message);
+  const handleWebSocketMessage = useCallback(
+    (message: Message) => {
+      console.log("Received WebSocket message:", message);
 
-    if (message.content) {
-      setMessages((prevMessages) => {
+      if (message.content) {
         // Check if message already exists to prevent duplicates
-        const messageExists = prevMessages.some((msg) => msg.id === message.id);
-        if (messageExists) {
-          return prevMessages;
+        const messageExists = globalMessages.some((msg) => msg.id === message.id);
+        if (!messageExists) {
+          dispatch(chatSlice.actions.setMessages([...globalMessages, message]));
         }
-
-        const newMessages = [...prevMessages, message];
-        console.log("New message appended. Current messages:", newMessages);
-        return newMessages;
-      });
-      setIsProcessing(false); // Hide loading when message is received
-    }
-  }, []);
+        setIsProcessing(false); // Hide loading when message is received
+      }
+    },
+    [dispatch, globalMessages],
+  );
 
   // Subscribe to WebSocket when requestId changes
   useEffect(() => {
@@ -99,10 +113,7 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
 
   useEffect(() => {
     if (savedMessages) {
-      setMessages(savedMessages);
-    }
-    if (savedFilesId) {
-      setFilesId(savedFilesId);
+      setFilesId(savedFilesId || []);
     }
     if (savedChatId) {
       setChatId(savedChatId);
@@ -129,7 +140,7 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
       createdAt: new Date().toISOString(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    dispatch(chatSlice.actions.setMessages([...globalMessages, userMessage]));
     setInput("");
     setFiles([]);
     setIsProcessing(true);
@@ -229,8 +240,8 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
       const result = await createMessage(messageData, accessToken);
       if (result?.request_id) {
         if (!chatId) {
-          const newChatId = result.conversation_id.toString();
-          setChatId(newChatId);
+          const newChatId = result.conversation_id;
+          dispatch(chatSlice.actions.setChatId(newChatId)); // Use action creator from slice
           const newUrl = `/chat/${newChatId}`;
           window.history.pushState({}, "", newUrl);
 
@@ -274,7 +285,7 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
         {/* Phần hiển thị tin nhắn */}
         <div className="flex-1 w-full flex justify-center overflow-auto">
           <ChatContainer
-            messages={messages}
+            messages={globalMessages}
             filesId={filesId}
             ref={scrollableChatContainerRef}
             height={scrollableChatContainerRef.current?.scrollHeight}
@@ -299,7 +310,7 @@ export default function Chat({ savedMessages, savedFilesId, savedChatId }: props
             setFileUploaded={setFileUploaded}
             chatId={chatId}
             setChatId={setChatId}
-            messages={messages}
+            messages={globalMessages}
             onHeightChange={handleChatFormHeightChange}
           />
         </div>
